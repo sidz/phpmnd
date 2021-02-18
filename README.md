@@ -1,9 +1,7 @@
 # PHP Magic Number Detector (PHPMND)
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/povils/phpmnd/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/povils/phpmnd/?branch=master)
-[![License](https://poser.pugx.org/povils/phpmnd/license)](https://packagist.org/packages/povils/phpmnd)
-[![Build Status](https://travis-ci.org/povils/phpmnd.svg?branch=master)](https://travis-ci.org/povils/phpmnd)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/povils/phpmnd?svg=true)](https://ci.appveyor.com/project/povils/phpmnd)
+[![Minimum PHP version: 7.1.0](https://img.shields.io/badge/php-7.1.0%2B-blue.svg)](https://packagist.org/packages/phpmnd/phpmnd)
+[![CI](https://github.com/sidz/phpmnd/workflows/CI/badge.svg?branch=master)](https://github.com/sidz/phpmnd)
 
 `phpmnd` is a tool that aims to **help** you to detect magic numbers in your PHP code. By default 0 and 1 are not considered to be magic numbers.
 
