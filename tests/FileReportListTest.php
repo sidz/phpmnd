@@ -1,17 +1,12 @@
 <?php
 
-namespace Povils\PHPMND\Tests;
+namespace PHPMND\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as Mock;
-use Povils\PHPMND\FileReport;
-use Povils\PHPMND\FileReportList;
+use PHPMND\FileReport;
+use PHPMND\FileReportList;
 
-/**
- * Class FileReportListTest
- *
- * @package Povils\PHPMND\Tests
- */
 class FileReportListTest extends TestCase
 {
     public function testAddFileReport(): void

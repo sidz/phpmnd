@@ -1,28 +1,21 @@
 <?php
 
-namespace Povils\PHPMND\Visitor;
+namespace PHPMND\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Expr\UnaryMinus;
 use PhpParser\Node\Expr\UnaryPlus;
-use PhpParser\Node\Scalar;
 use PhpParser\Node\Scalar\DNumber;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use Povils\PHPMND\Console\Option;
-use Povils\PHPMND\Extension\ArrayAwareExtension;
-use Povils\PHPMND\Extension\Extension;
-use Povils\PHPMND\Extension\FunctionAwareExtension;
-use Povils\PHPMND\FileReport;
+use PHPMND\Console\Option;
+use PHPMND\Extension\ArrayAwareExtension;
+use PHPMND\Extension\FunctionAwareExtension;
+use PHPMND\FileReport;
 
-/**
- * Class DetectorVisitor
- *
- * @package Povils\PHPMND
- */
 class DetectorVisitor extends NodeVisitorAbstract
 {
     /**

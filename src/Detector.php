@@ -1,22 +1,17 @@
 <?php
 
-namespace Povils\PHPMND;
+namespace PHPMND;
 
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
-use Povils\PHPMND\Console\Option;
-use Povils\PHPMND\Visitor\DetectorVisitor;
-use Povils\PHPMND\Visitor\HintVisitor;
-use Povils\PHPMND\Visitor\ParentConnectorVisitor;
+use PHPMND\Console\Option;
+use PHPMND\Visitor\DetectorVisitor;
+use PHPMND\Visitor\HintVisitor;
+use PHPMND\Visitor\ParentConnectorVisitor;
 use Symfony\Component\Finder\SplFileInfo;
 use const PHP_VERSION;
 
-/**
- * Class Detector
- *
- * @package Povils\PHPMND
- */
 class Detector
 {
     /**

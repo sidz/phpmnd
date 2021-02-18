@@ -1,12 +1,7 @@
 <?php
 
-namespace Povils\PHPMND;
+namespace PHPMND;
 
-/**
- * Class HintList
- *
- * @package Povils\PHPMND
- */
 class HintList
 {
     /**

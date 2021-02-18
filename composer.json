@@ -30,17 +30,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Povils\\PHPMND\\": "src/"
+            "PHPMND\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Povils\\PHPMND\\Tests\\": "tests/"
+            "PHPMND\\Tests\\": "tests/"
         }
     },
     "bin": [
         "bin/phpmnd"
     ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
     "scripts": {
         "test": "phpunit",
         "cs-check": "phpcs -p --standard=PSR2 --runtime-set ignore_warnings_on_exit 1 src tests --ignore=tests/files",

@@ -1,13 +1,13 @@
 <?php
 
-namespace Povils\PHPMND\Console;
+namespace PHPMND\Console;
 
-use Povils\PHPMND\Detector;
-use Povils\PHPMND\ExtensionResolver;
-use Povils\PHPMND\FileReportList;
-use Povils\PHPMND\HintList;
-use Povils\PHPMND\PHPFinder;
-use Povils\PHPMND\Printer;
+use PHPMND\Detector;
+use PHPMND\ExtensionResolver;
+use PHPMND\FileReportList;
+use PHPMND\HintList;
+use PHPMND\PHPFinder;
+use PHPMND\Printer;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Command\Command as BaseCommand;
@@ -17,11 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class Command
- *
- * @package Povils\PHPMND\Console
- */
 class Command extends BaseCommand
 {
     const EXIT_CODE_SUCCESS = 0;

@@ -1,12 +1,9 @@
 <?php
 
-namespace Povils\PHPMND;
+namespace PHPMND;
 
 use Symfony\Component\Finder\SplFileInfo;
 
-/**
- * @package Povils\PHPMND
- */
 class FileReport
 {
     /**

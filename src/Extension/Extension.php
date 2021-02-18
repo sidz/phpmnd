@@ -1,13 +1,10 @@
 <?php
 
-namespace Povils\PHPMND\Extension;
+namespace PHPMND\Extension;
 
 use PhpParser\Node;
-use Povils\PHPMND\Console\Option;
+use PHPMND\Console\Option;
 
-/**
- * @package Povils\PHPMND\Extension
- */
 abstract class Extension
 {
     /**

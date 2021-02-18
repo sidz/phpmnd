@@ -1,18 +1,13 @@
 <?php
 
-namespace Povils\PHPMND\Printer;
+namespace PHPMND\Printer;
 
 use JakubOnderka\PhpConsoleColor\ConsoleColor;
 use JakubOnderka\PhpConsoleHighlighter\Highlighter;
-use Povils\PHPMND\FileReportList;
-use Povils\PHPMND\HintList;
+use PHPMND\FileReportList;
+use PHPMND\HintList;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class Console
- *
- * @package Povils\PHPMND\Printer
- */
 class Console implements Printer
 {
     const LINE_LENGTH = 80;

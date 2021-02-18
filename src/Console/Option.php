@@ -1,12 +1,9 @@
 <?php
 
-namespace Povils\PHPMND\Console;
+namespace PHPMND\Console;
 
-use Povils\PHPMND\Extension\Extension;
+use PHPMND\Extension\Extension;
 
-/**
- * @package Povils\PHPMND\Console
- */
 class Option
 {
     /**

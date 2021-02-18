@@ -1,12 +1,7 @@
 <?php
 
-namespace Povils\PHPMND;
+namespace PHPMND;
 
-/**
- * Class FileReportList
- *
- * @package Povils\PHPMND
- */
 class FileReportList
 {
     /**

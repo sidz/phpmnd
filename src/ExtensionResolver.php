@@ -1,23 +1,18 @@
 <?php
 
-namespace Povils\PHPMND;
+namespace PHPMND;
 
-use Povils\PHPMND\Extension\ArgumentExtension;
-use Povils\PHPMND\Extension\ArrayExtension;
-use Povils\PHPMND\Extension\AssignExtension;
-use Povils\PHPMND\Extension\ConditionExtension;
-use Povils\PHPMND\Extension\DefaultParameterExtension;
-use Povils\PHPMND\Extension\Extension;
-use Povils\PHPMND\Extension\OperationExtension;
-use Povils\PHPMND\Extension\PropertyExtension;
-use Povils\PHPMND\Extension\ReturnExtension;
-use Povils\PHPMND\Extension\SwitchCaseExtension;
+use PHPMND\Extension\ArgumentExtension;
+use PHPMND\Extension\ArrayExtension;
+use PHPMND\Extension\AssignExtension;
+use PHPMND\Extension\ConditionExtension;
+use PHPMND\Extension\DefaultParameterExtension;
+use PHPMND\Extension\Extension;
+use PHPMND\Extension\OperationExtension;
+use PHPMND\Extension\PropertyExtension;
+use PHPMND\Extension\ReturnExtension;
+use PHPMND\Extension\SwitchCaseExtension;
 
-/**
- * Class ExtensionResolver
- *
- * @package Povils\PHPMND
- */
 class ExtensionResolver
 {
     const ALL_EXTENSIONS = 'all';

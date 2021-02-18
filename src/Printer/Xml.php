@@ -1,17 +1,12 @@
 <?php
 
-namespace Povils\PHPMND\Printer;
+namespace PHPMND\Printer;
 
-use Povils\PHPMND\Console\Application;
-use Povils\PHPMND\FileReportList;
-use Povils\PHPMND\HintList;
+use PHPMND\Console\Application;
+use PHPMND\FileReportList;
+use PHPMND\HintList;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class Xml
- *
- * @package Povils\PHPMND\Printer
- */
 class Xml implements Printer
 {
     /** @var string */

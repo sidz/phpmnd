@@ -1,17 +1,12 @@
 <?php
 
-namespace Povils\PHPMND\Tests;
+namespace PHPMND\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Povils\PHPMND\Extension\AssignExtension;
-use Povils\PHPMND\Extension\ReturnExtension;
-use Povils\PHPMND\ExtensionResolver;
+use PHPMND\Extension\AssignExtension;
+use PHPMND\Extension\ReturnExtension;
+use PHPMND\ExtensionResolver;
 
-/**
- * Class ExtensionResolverTest
- *
- * @package Povils\PHPMND\Tests
- */
 class ExtensionResolverTest extends TestCase
 {
     public function testResolveDefault(): void
@@ -41,7 +36,7 @@ class ExtensionResolverTest extends TestCase
     {
         $resolver = $this->createResolver();
         $extensions = $resolver->resolve(['all']);
-        
+
         $this->assertSame($resolver->all(), $extensions);
     }
 

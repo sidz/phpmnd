@@ -1,6 +1,6 @@
 <?php
 
-namespace Povils\PHPMND\Visitor;
+namespace PHPMND\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Const_;
@@ -9,13 +9,8 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use Povils\PHPMND\HintList;
+use PHPMND\HintList;
 
-/**
- * Class HintVisitor
- *
- * @package Povils\PHPMND\Visitor
- */
 class HintVisitor extends NodeVisitorAbstract
 {
     /**
