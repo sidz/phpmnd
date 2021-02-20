@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPMND\Console;
 
 use PHPMND\Detector;
@@ -227,7 +229,7 @@ class Command extends BaseCommand
         $result = $input->getOption($option);
         if (false === is_array($result)) {
             return array_filter(
-                explode(',', $result),
+                explode(',', (string) $result),
                 function ($value) {
                     return false === empty($value);
                 }
@@ -265,7 +267,7 @@ class Command extends BaseCommand
     {
         $filename = $this->convertFileDescriptorLink($filename);
 
-        if (file_exists($filename)) {
+        if (is_string($filename) && file_exists($filename)) {
             return array_map('trim', file($filename));
         }
 
@@ -274,7 +276,7 @@ class Command extends BaseCommand
 
     private function convertFileDescriptorLink($path)
     {
-        if (strpos($path, '/dev/fd') === 0) {
+        if (is_string($path) && strpos($path, '/dev/fd') === 0) {
             return str_replace('/dev/fd', 'php://fd', $path);
         }
 

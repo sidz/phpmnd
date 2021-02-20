@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPMND\Visitor;
 
 use PhpParser\Node;
@@ -35,7 +37,7 @@ class HintVisitor extends NodeVisitorAbstract
             if ($constParent instanceof ClassConst) {
                 $classConstParent = $constParent->getAttribute('parent');
                 if ($classConstParent instanceof Class_) {
-                    $this->hintList->addClassCont($constantValue, $classConstParent->name, $node->name);
+                    $this->hintList->addClassCont($constantValue, (string) $classConstParent->name, (string) $node->name);
                 }
             }
         }

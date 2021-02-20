@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPMND\Tests\Console;
 
 use PHPUnit\Framework\MockObject\MockObject;

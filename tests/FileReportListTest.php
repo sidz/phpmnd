@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPMND\Tests;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject as Mock;
 use PHPMND\FileReport;
 use PHPMND\FileReportList;
 
@@ -12,7 +14,7 @@ class FileReportListTest extends TestCase
     public function testAddFileReport(): void
     {
         $fileReportList = new FileReportList;
-        /** @var FileReport|Mock $fileReport */
+        /** @var FileReport|MockObject $fileReport */
         $fileReport = $this->createMock(FileReport::class);
         $fileReport
             ->method('hasMagicNumbers')
