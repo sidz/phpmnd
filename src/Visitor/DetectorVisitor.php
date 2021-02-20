@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPMND\Visitor;
 
 use PhpParser\Node;
@@ -12,8 +14,6 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PHPMND\Console\Option;
-use PHPMND\Extension\ArrayAwareExtension;
-use PHPMND\Extension\FunctionAwareExtension;
 use PHPMND\FileReport;
 
 class DetectorVisitor extends NodeVisitorAbstract
