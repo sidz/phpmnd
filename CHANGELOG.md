@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v2.4.0] - 2021-02-19
+- Support PHP 8.0
+- Move to GitHub Actions
+
 ## [v2.3.0] - 2020-04-15
 - Support PHP 7.3 and PHP 7.4
 - Update dependencies
