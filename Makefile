@@ -28,7 +28,7 @@ cs-fix: prerequisites ## Runs code style checks and fix founded issues
 	$(PHP_CS_FIXER) $(PHP_CS_FIXER_ARGS)
 
 test: prerequisites ## Runs Unit tests
-	vendor/bin/phpunit
+	vendor/phpunit/phpunit/phpunit
 
 # We need both vendor/autoload.php and composer.lock being up to date
 .PHONY: prerequisites
