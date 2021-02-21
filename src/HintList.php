@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPMND;
 
+use function sprintf;
+
 class HintList
 {
     /**
@@ -11,14 +13,10 @@ class HintList
      */
     private $constants = [];
 
-    /**
-     * @param mixed $magicNumber
-     *
-     * @return array
-     */
     public function getHintsByValue($magicNumber): array
     {
         $hints = [];
+
         foreach ($this->constants as $constant) {
             if ($constant['value'] === $magicNumber) {
                 $hints[] = $constant['hint'];
@@ -30,19 +28,14 @@ class HintList
 
     public function hasHints(): bool
     {
-        return false === empty($this->constants);
+        return empty($this->constants) === false;
     }
 
-    /**
-     * @param mixed  $value
-     * @param string $className
-     * @param string $constName
-     */
     public function addClassCont($value, string $className, string $constName): void
     {
         $this->constants[] = [
             'value' => $value,
-            'hint' => sprintf('%s::%s', $className, $constName)
+            'hint' => sprintf('%s::%s', $className, $constName),
         ];
     }
 }

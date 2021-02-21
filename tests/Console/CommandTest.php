@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests\Console;
 
+use PHPMND\Console\Command;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPMND\Console\Command;
+use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CommandTest extends TestCase
 {
-
-    public function testExecuteNoFilesFound(): void
+    public function test_execute_no_files_found(): void
     {
         $input = $this->createInput(null, 'bad_suffix');
         $output = $this->createOutput();
@@ -21,7 +21,7 @@ class CommandTest extends TestCase
         $this->assertSame(Command::EXIT_CODE_SUCCESS, $this->execute([$input, $output]));
     }
 
-    public function testExecuteWithViolationOption(): void
+    public function test_execute_with_violation_option(): void
     {
         $input = $this->createInput(null, null, true);
         $output = $this->createOutput();
@@ -29,7 +29,7 @@ class CommandTest extends TestCase
         $this->assertSame(Command::EXIT_CODE_FAILURE, $this->execute([$input, $output]));
     }
 
-    public function testExecuteWithHintOption(): void
+    public function test_execute_with_hint_option(): void
     {
         $input = $this->createInput('assign', null, true, true);
         $output = $this->createOutput();
@@ -41,16 +41,6 @@ class CommandTest extends TestCase
         $this->execute([$input, $output]);
     }
 
-    private function execute(array $args): int
-    {
-        $command = new Command;
-        $class = new \ReflectionClass(new Command);
-        $method = $class->getMethod('execute');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($command, $args);
-    }
-
     protected function createInput(
         ?string $extensions = '',
         ?string $suffix = 'php',
@@ -60,8 +50,7 @@ class CommandTest extends TestCase
         $input = $this->createMock(InputInterface::class);
         $input
             ->method('getOption')
-            ->will(
-                $this->returnValueMap(
+            ->willReturnMap(
                     [
                         ['extensions', $extensions],
                         ['exclude', []],
@@ -71,23 +60,31 @@ class CommandTest extends TestCase
                         ['non-zero-exit-on-violation', $exitOnViolation],
                         ['hint', $hint],
                     ]
-                )
             );
 
         $input
             ->method('getArgument')
-            ->will(
-                $this->returnValueMap(
+            ->willReturnMap(
                     [
                         ['directories', ['tests/files']],
                     ]
-                )
             );
+
         return $input;
     }
 
     protected function createOutput(): MockObject
     {
         return $this->createMock(OutputInterface::class);
+    }
+
+    private function execute(array $args): int
+    {
+        $command = new Command();
+        $class = new ReflectionClass(new Command());
+        $method = $class->getMethod('execute');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($command, $args);
     }
 }

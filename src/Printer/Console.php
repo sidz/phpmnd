@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace PHPMND\Printer;
 
+use function count;
 use JakubOnderka\PhpConsoleColor\ConsoleColor;
 use JakubOnderka\PhpConsoleHighlighter\Highlighter;
+use const PHP_EOL;
 use PHPMND\FileReportList;
 use PHPMND\HintList;
+use function sprintf;
+use function str_repeat;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Console implements Printer
@@ -21,9 +25,11 @@ class Console implements Printer
         $output->writeln(PHP_EOL . $separator . PHP_EOL);
 
         $total = 0;
+
         foreach ($fileReportList->getFileReports() as $fileReport) {
             $entries = $fileReport->getEntries();
             $total += count($entries);
+
             foreach ($entries as $entry) {
                 $output->writeln(sprintf(
                     '%s:%d. Magic number: %s',
@@ -39,8 +45,10 @@ class Console implements Printer
 
                 if ($hintList->hasHints()) {
                     $hints = $hintList->getHintsByValue($entry['value']);
-                    if (false === empty($hints)) {
+
+                    if (empty($hints) === false) {
                         $output->writeln('Suggestions:');
+
                         foreach ($hints as $hint) {
                             $output->writeln(str_repeat(' ', 2 * self::TAB) . $hint);
                         }

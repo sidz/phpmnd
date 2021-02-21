@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace PHPMND;
 
-use PhpParser\Lexer;
-use PhpParser\NodeTraverser;
-use PhpParser\ParserFactory;
+use const PHP_VERSION;
 use PHPMND\Console\Option;
 use PHPMND\Visitor\DetectorVisitor;
 use PHPMND\Visitor\HintVisitor;
 use PHPMND\Visitor\ParentConnectorVisitor;
+use PhpParser\Lexer;
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
 use Symfony\Component\Finder\SplFileInfo;
-use const PHP_VERSION;
+use function version_compare;
 
 class Detector
 {
@@ -39,17 +40,17 @@ class Detector
         // with e.g. longer list of reserved keywords
         $lexer = version_compare('8.0', PHP_VERSION) > 0 ? new Lexer() : null;
 
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
         $traverser = new NodeTraverser();
 
         $fileReport = new FileReport($file);
 
         $traverser->addVisitor(new ParentConnectorVisitor());
         $traverser->addVisitor(new DetectorVisitor($fileReport, $this->option));
+
         if ($this->option->giveHint()) {
             $traverser->addVisitor(new HintVisitor($this->hintList));
         }
-
 
         $stmts = $parser->parse($file->getContents());
         $traverser->traverse($stmts);

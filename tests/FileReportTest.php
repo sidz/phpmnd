@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests;
 
+use const DIRECTORY_SEPARATOR;
 use PHPMND\FileReport;
-use Symfony\Component\Finder\SplFileInfo;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Finder\SplFileInfo;
 
 class FileReportTest extends TestCase
 {
-    public function testFileReport(): void
+    public function test_file_report(): void
     {
         $file = self::getTestFile('test_1');
         $fileReport = new FileReport($file);

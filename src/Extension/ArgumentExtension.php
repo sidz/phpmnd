@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
+use function in_array;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
@@ -18,7 +19,7 @@ class ArgumentExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        return $node->getAttribute('parent') instanceof Arg && false === $this->ignoreFunc($node);
+        return $node->getAttribute('parent') instanceof Arg && $this->ignoreFunc($node) === false;
     }
 
     private function ignoreFunc(Node $node): bool

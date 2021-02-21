@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace PHPMND;
 
+use function array_diff;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function dirname;
+use function realpath;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -28,7 +34,7 @@ class PHPFinder extends Finder
             ->ignoreVCS(true)
             ->append(
                 array_map(
-                    function (string $file) {
+                    static function (string $file) {
                         return new SplFileInfo(realpath($file), dirname($file), $file);
                     },
                     $files

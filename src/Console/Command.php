@@ -4,6 +4,18 @@ declare(strict_types=1);
 
 namespace PHPMND\Console;
 
+use function array_filter;
+use function array_map;
+use function class_exists;
+use function count;
+use Exception;
+use function explode;
+use function file;
+use function file_exists;
+use function in_array;
+use function is_array;
+use function is_numeric;
+use function is_string;
 use PHPMND\Detector;
 use PHPMND\ExtensionResolver;
 use PHPMND\FileReportList;
@@ -12,6 +24,8 @@ use PHPMND\PHPFinder;
 use PHPMND\Printer;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use SebastianBergmann\Timer\Timer;
+use function str_replace;
+use function strpos;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -149,18 +163,20 @@ class Command extends BaseCommand
         $this->startTimer();
         $finder = $this->createFinder($input);
 
-        if (0 === $finder->count()) {
+        if ($finder->count() === 0) {
             $output->writeln('No files found to scan');
+
             return self::EXIT_CODE_SUCCESS;
         }
 
         $progressBar = null;
+
         if ($input->getOption('progress')) {
             $progressBar = new ProgressBar($output, $finder->count());
             $progressBar->start();
         }
 
-        $hintList = new HintList;
+        $hintList = new HintList();
         $detector = new Detector($this->createOption($input), $hintList);
 
         $fileReportList = new FileReportList();
@@ -174,10 +190,11 @@ class Command extends BaseCommand
 
             try {
                 $fileReport = $detector->detect($file);
+
                 if ($fileReport->hasMagicNumbers()) {
                     $fileReportList->addFileReport($fileReport);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $output->writeln($e->getMessage());
             }
 
@@ -204,12 +221,24 @@ class Command extends BaseCommand
         if ($input->getOption('non-zero-exit-on-violation') && $fileReportList->hasMagicNumbers()) {
             return self::EXIT_CODE_FAILURE;
         }
+
         return self::EXIT_CODE_SUCCESS;
+    }
+
+    protected function createFinder(InputInterface $input): PHPFinder
+    {
+        return new PHPFinder(
+            $input->getArgument('directories'),
+            $input->getOption('exclude'),
+            $input->getOption('exclude-path'),
+            $input->getOption('exclude-file'),
+            $this->getCSVOption($input, 'suffixes')
+        );
     }
 
     private function createOption(InputInterface $input): Option
     {
-        $option = new Option;
+        $option = new Option();
         $option->setIgnoreNumbers(array_map([$this, 'castToNumber'], $this->getCSVOption($input, 'ignore-numbers')));
         $option->setIgnoreFuncs($this->getCSVOption($input, 'ignore-funcs'));
         $option->setIncludeStrings($input->getOption('strings'));
@@ -227,31 +256,21 @@ class Command extends BaseCommand
     private function getCSVOption(InputInterface $input, string $option): array
     {
         $result = $input->getOption($option);
-        if (false === is_array($result)) {
+
+        if (is_array($result) === false) {
             return array_filter(
                 explode(',', (string) $result),
-                function ($value) {
-                    return false === empty($value);
+                static function ($value) {
+                    return empty($value) === false;
                 }
             );
         }
 
-        if (null === $result) {
+        if ($result === null) {
             return [];
         }
 
         return $result;
-    }
-
-    protected function createFinder(InputInterface $input): PHPFinder
-    {
-        return new PHPFinder(
-            $input->getArgument('directories'),
-            $input->getOption('exclude'),
-            $input->getOption('exclude-path'),
-            $input->getOption('exclude-file'),
-            $this->getCSVOption($input, 'suffixes')
-        );
     }
 
     private function castToNumber(string $value)
@@ -283,7 +302,7 @@ class Command extends BaseCommand
         return $path;
     }
 
-    private function startTimer()
+    private function startTimer(): void
     {
         if (class_exists(ResourceUsageFormatter::class)) {
             $this->timer = new Timer();
@@ -295,7 +314,7 @@ class Command extends BaseCommand
     {
         // php-timer ^4.0||^5.0
         if (class_exists(ResourceUsageFormatter::class)) {
-            return (new ResourceUsageFormatter)->resourceUsage($this->timer->stop());
+            return (new ResourceUsageFormatter())->resourceUsage($this->timer->stop());
         }
 
         // php-timer ^2.0||^3.0

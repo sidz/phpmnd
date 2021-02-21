@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PHPMND\Console;
 
+use const PHP_EOL;
+use function sprintf;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -20,19 +22,6 @@ class Application extends BaseApplication
         parent::__construct('phpmnd', self::VERSION);
     }
 
-    protected function getCommandName(InputInterface $input): string
-    {
-        return self::COMMAND_NAME;
-    }
-
-    protected function getDefaultCommands(): array
-    {
-        $defaultCommands = parent::getDefaultCommands();
-        $defaultCommands[] = new Command;
-
-        return $defaultCommands;
-    }
-
     public function getDefinition(): InputDefinition
     {
         $inputDefinition = parent::getDefinition();
@@ -43,7 +32,7 @@ class Application extends BaseApplication
 
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
-        if (false === $input->hasParameterOption('--quiet')) {
+        if ($input->hasParameterOption('--quiet') === false) {
             $output->write(
                 sprintf(
                     'phpmnd %s by Povilas Susinskas' . PHP_EOL,
@@ -56,10 +45,23 @@ class Application extends BaseApplication
             return Command::EXIT_CODE_SUCCESS;
         }
 
-        if (null === $input->getFirstArgument()) {
+        if ($input->getFirstArgument() === null) {
             $input = new ArrayInput(['--help']);
         }
 
         return parent::doRun($input, $output);
+    }
+
+    protected function getCommandName(InputInterface $input): string
+    {
+        return self::COMMAND_NAME;
+    }
+
+    protected function getDefaultCommands(): array
+    {
+        $defaultCommands = parent::getDefaultCommands();
+        $defaultCommands[] = new Command();
+
+        return $defaultCommands;
     }
 }

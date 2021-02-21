@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PHPMND;
 
+use function array_merge;
+use function array_search;
+use InvalidArgumentException;
 use PHPMND\Extension\ArgumentExtension;
 use PHPMND\Extension\ArrayExtension;
 use PHPMND\Extension\AssignExtension;
@@ -14,6 +17,9 @@ use PHPMND\Extension\OperationExtension;
 use PHPMND\Extension\PropertyExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\Extension\SwitchCaseExtension;
+use function sprintf;
+use function strpos;
+use function substr;
 
 class ExtensionResolver
 {
@@ -37,6 +43,7 @@ class ExtensionResolver
     public function resolve(array $extensionNames): array
     {
         $this->resolvedExtensions = $this->defaults();
+
         if (($allKey = array_search(self::ALL_EXTENSIONS, $extensionNames)) !== false) {
             $this->resolvedExtensions = $this->all();
             unset($extensionNames[$allKey]);
@@ -45,6 +52,7 @@ class ExtensionResolver
         foreach ($extensionNames as $extensionName) {
             if ($this->startsWithMinus($extensionName)) {
                 $this->removeExtension($extensionName);
+
                 continue;
             }
 
@@ -56,11 +64,11 @@ class ExtensionResolver
 
     public function defaults(): array
     {
-        if (null === $this->defaultExtensions) {
+        if ($this->defaultExtensions === null) {
             $this->defaultExtensions = [
-                new ConditionExtension,
-                new ReturnExtension,
-                new SwitchCaseExtension
+                new ConditionExtension(),
+                new ReturnExtension(),
+                new SwitchCaseExtension(),
             ];
         }
 
@@ -69,15 +77,15 @@ class ExtensionResolver
 
     public function all(): array
     {
-        if (null === $this->allExtensions) {
+        if ($this->allExtensions === null) {
             $this->allExtensions = array_merge(
                 [
-                    new ArgumentExtension,
-                    new ArrayExtension,
-                    new AssignExtension,
-                    new DefaultParameterExtension,
-                    new OperationExtension,
-                    new PropertyExtension
+                    new ArgumentExtension(),
+                    new ArrayExtension(),
+                    new AssignExtension(),
+                    new DefaultParameterExtension(),
+                    new OperationExtension(),
+                    new PropertyExtension(),
                 ],
                 $this->defaults()
             );
@@ -95,13 +103,14 @@ class ExtensionResolver
 
                     return;
                 }
-            };
+            }
         }
     }
 
     private function removeExtension(string $extensionName): void
     {
         $extensionNameWithoutMinus = substr($extensionName, 1);
+
         if ($this->exists($extensionNameWithoutMinus)) {
             foreach ($this->resolvedExtensions as $key => $resolvedExtension) {
                 if ($extensionNameWithoutMinus === $resolvedExtension->getName()) {
@@ -121,11 +130,11 @@ class ExtensionResolver
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Extension "%s" does not exist', $extensionName));
+        throw new InvalidArgumentException(sprintf('Extension "%s" does not exist', $extensionName));
     }
 
     private function startsWithMinus(string $extensionName): bool
     {
-        return 0 === strpos($extensionName, '-');
+        return strpos($extensionName, '-') === 0;
     }
 }

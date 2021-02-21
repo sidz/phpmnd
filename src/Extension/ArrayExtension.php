@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
+use function is_numeric;
 use PhpParser\Node;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 
 class ArrayExtension extends Extension
@@ -21,8 +22,8 @@ class ArrayExtension extends Extension
         $parent = $node->getAttribute('parent');
 
         return (
-            $parent instanceof ArrayItem  &&
-            false === $this->ignoreArray($parent)
+            $parent instanceof ArrayItem &&
+            $this->ignoreArray($parent) === false
           ) || $parent instanceof ArrayDimFetch;
     }
 

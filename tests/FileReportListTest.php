@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use PHPMND\FileReport;
 use PHPMND\FileReportList;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class FileReportListTest extends TestCase
 {
-    public function testAddFileReport(): void
+    public function test_add_file_report(): void
     {
-        $fileReportList = new FileReportList;
+        $fileReportList = new FileReportList();
         /** @var FileReport|MockObject $fileReport */
         $fileReport = $this->createMock(FileReport::class);
         $fileReport
@@ -26,9 +26,9 @@ class FileReportListTest extends TestCase
         $this->assertTrue($fileReportList->hasMagicNumbers());
     }
 
-    public function testDoesNotHaveMagicNumbers(): void
+    public function test_does_not_have_magic_numbers(): void
     {
-        $fileReportList = new FileReportList;
+        $fileReportList = new FileReportList();
 
         $this->assertFalse($fileReportList->hasMagicNumbers());
     }
