@@ -13,7 +13,7 @@ help:
 #---------------------------------------------------------------------------
 
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
-PHP_CS_FIXER_ARGS=fix --diff --diff-format=udiff
+PHP_CS_FIXER_ARGS=fix --diff --diff-format=udiff --verbose
 
 #
 # Commands (phony targets)
