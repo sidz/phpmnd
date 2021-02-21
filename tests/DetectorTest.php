@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests;
 
-use PHPUnit\Framework\TestCase;
+use function array_merge;
+use function in_array;
 use PHPMND\Console\Option;
 use PHPMND\Detector;
 use PHPMND\Extension\ArgumentExtension;
@@ -17,10 +18,11 @@ use PHPMND\Extension\PropertyExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\Extension\SwitchCaseExtension;
 use PHPMND\HintList;
+use PHPUnit\Framework\TestCase;
 
 class DetectorTest extends TestCase
 {
-    public function testDetectDefault(): void
+    public function test_detect_default(): void
     {
         $detector = $this->createDetector($this->createOption());
         $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
@@ -60,7 +62,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithAssignExtension(): void
+    public function test_detect_with_assign_extension(): void
     {
         $option = $this->createOption([new AssignExtension()]);
         $option->setIncludeNumericStrings(true);
@@ -76,7 +78,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithPropertyExtension(): void
+    public function test_detect_with_property_extension(): void
     {
         $option = $this->createOption([new PropertyExtension()]);
         $detector = $this->createDetector($option);
@@ -91,7 +93,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithArrayExtension(): void
+    public function test_detect_with_array_extension(): void
     {
         $option = $this->createOption([new ArrayExtension()]);
         $detector = $this->createDetector($option);
@@ -106,7 +108,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithArgumentExtension(): void
+    public function test_detect_with_argument_extension(): void
     {
         $option = $this->createOption([new ArgumentExtension()]);
         $detector = $this->createDetector($option);
@@ -122,7 +124,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithDefaultParameterExtension(): void
+    public function test_detect_with_default_parameter_extension(): void
     {
         $option = $this->createOption([new DefaultParameterExtension()]);
         $detector = $this->createDetector($option);
@@ -138,7 +140,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithOperationExtension(): void
+    public function test_detect_with_operation_extension(): void
     {
         $option = $this->createOption([new OperationExtension()]);
         $detector = $this->createDetector($option);
@@ -162,7 +164,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithIgnoreNumber(): void
+    public function test_detect_with_ignore_number(): void
     {
         $ignoreNumbers = [2, 10];
         $option = $this->createOption();
@@ -176,7 +178,7 @@ class DetectorTest extends TestCase
         }
     }
 
-    public function testDetectWithIgnoreFuncs(): void
+    public function test_detect_with_ignore_funcs(): void
     {
         $ignoreFuncs = ['round'];
         $option = $this->createOption([new ArgumentExtension()]);
@@ -194,7 +196,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectIncludeStrings(): void
+    public function test_detect_include_strings(): void
     {
         $option = $this->createOption();
         $option->setIncludeStrings(true);
@@ -211,7 +213,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectIncludeStringsAndIgnoreString(): void
+    public function test_detect_include_strings_and_ignore_string(): void
     {
         $option = $this->createOption();
         $option->setIncludeStrings(true);
@@ -229,12 +231,12 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testDetectWithHint(): void
+    public function test_detect_with_hint(): void
     {
         $option = $this->createOption();
-        $option->setExtensions([new AssignExtension]);
+        $option->setExtensions([new AssignExtension()]);
         $option->setGiveHint(true);
-        $hintList = new HintList;
+        $hintList = new HintList();
         $detector = $this->createDetector($option, $hintList);
 
         $detector->detect(FileReportTest::getTestFile('test_1'));
@@ -243,10 +245,10 @@ class DetectorTest extends TestCase
         $this->assertSame(['TEST_1::TEST_1'], $hintList->getHintsByValue(3));
     }
 
-    public function testDontDetect0And1WithIncludeNumericStrings(): void
+    public function test_dont_detect0_and1_with_include_numeric_strings(): void
     {
         $option = $this->createOption();
-        $option->setExtensions([new AssignExtension]);
+        $option->setExtensions([new AssignExtension()]);
         $option->setIncludeNumericStrings(true);
         $detector = $this->createDetector($option);
 
@@ -255,10 +257,10 @@ class DetectorTest extends TestCase
         $this->assertEmpty($fileReport->getEntries());
     }
 
-    public function testDetectReadingNumber(): void
+    public function test_detect_reading_number(): void
     {
         $option = $this->createOption();
-        $option->setExtensions([new ArrayExtension]);
+        $option->setExtensions([new ArrayExtension()]);
         $option->setIncludeNumericStrings(true);
         $detector = $this->createDetector($option);
 
@@ -273,7 +275,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testAllowArrayMappingWithArrayExtension(): void
+    public function test_allow_array_mapping_with_array_extension(): void
     {
         $option = $this->createOption();
         $option->setExtensions([new ArrayExtension()]);
@@ -316,8 +318,7 @@ class DetectorTest extends TestCase
         );
     }
 
-
-    public function testDefaultIgnoreFunctions(): void
+    public function test_default_ignore_functions(): void
     {
         $option = $this->createOption();
         $option->setExtensions([new ArrayExtension()]);
@@ -353,7 +354,7 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function testCheckForMagicArrayConstants(): void
+    public function test_check_for_magic_array_constants(): void
     {
         $option = $this->createOption();
         $option->setExtensions([new ArrayExtension()]);
@@ -372,13 +373,13 @@ class DetectorTest extends TestCase
 
     private function createOption(array $extensions = []): Option
     {
-        $option = new Option;
+        $option = new Option();
         $option->setExtensions(
             array_merge(
                 [
-                    new ReturnExtension,
-                    new ConditionExtension,
-                    new SwitchCaseExtension
+                    new ReturnExtension(),
+                    new ConditionExtension(),
+                    new SwitchCaseExtension(),
                 ],
                 $extensions
             )
@@ -389,8 +390,8 @@ class DetectorTest extends TestCase
 
     private function createDetector(Option $option, ?HintList $hintList = null): Detector
     {
-        if (null === $hintList) {
-            $hintList = new HintList;
+        if ($hintList === null) {
+            $hintList = new HintList();
         }
 
         return new Detector($option, $hintList);

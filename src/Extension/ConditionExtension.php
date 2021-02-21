@@ -33,7 +33,7 @@ class ConditionExtension extends Extension
         return
             $this->isCondition($node->getAttribute('parent'))
             &&
-            false === $this->comparesToConst($node->getAttribute('parent'));
+            $this->comparesToConst($node->getAttribute('parent')) === false;
     }
 
     private function isCondition(Node $node): bool

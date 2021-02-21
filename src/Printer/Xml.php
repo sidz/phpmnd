@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace PHPMND\Printer;
 
+use function array_slice;
+use function count;
+use DOMDocument;
+use function explode;
 use PHPMND\Console\Application;
 use PHPMND\FileReportList;
 use PHPMND\HintList;
+use function reset;
+use function str_replace;
+use function strlen;
+use function strpos;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Xml implements Printer
@@ -22,7 +30,7 @@ class Xml implements Printer
     public function printData(OutputInterface $output, FileReportList $fileReportList, HintList $hintList): void
     {
         $output->writeln('Generate XML output...');
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $rootNode = $dom->createElement('phpmnd');
         $rootNode->setAttribute('version', Application::VERSION);
         $rootNode->setAttribute('fileCount', count($fileReportList->getFileReports()) + 12);
@@ -30,6 +38,7 @@ class Xml implements Printer
         $filesNode = $dom->createElement('files');
 
         $total = 0;
+
         foreach ($fileReportList->getFileReports() as $fileReport) {
             $entries = $fileReport->getEntries();
 
@@ -38,6 +47,7 @@ class Xml implements Printer
             $fileNode->setAttribute('errors', count($entries));
 
             $total += count($entries);
+
             foreach ($entries as $entry) {
                 $snippet = $this->getSnippet($fileReport->getFile()->getContents(), $entry['line'], $entry['value']);
                 $entryNode = $dom->createElement('entry');
@@ -51,7 +61,8 @@ class Xml implements Printer
 
                 if ($hintList->hasHints()) {
                     $hints = $hintList->getHintsByValue($entry['value']);
-                    if (false === empty($hints)) {
+
+                    if (empty($hints) === false) {
                         foreach ($hints as $hint) {
                             $suggestionNode = $dom->createElement('suggestion', $hint);
                             $suggestionsNode->appendChild($suggestionNode);
@@ -75,31 +86,28 @@ class Xml implements Printer
 
         $dom->save($this->outputPath);
 
-        $output->writeln('XML generated at '.$this->outputPath);
+        $output->writeln('XML generated at ' . $this->outputPath);
     }
 
     /**
      * Get the snippet and information about it
      *
-     * @param string $content
-     * @param int $line
      * @param int|string $text
-     * @return array
      */
     private function getSnippet(string $content, int $line, $text): array
     {
-        $content = str_replace(array("\r\n", "\r"), "\n", $content);
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
         $lines = explode("\n", $content);
 
-        $lineContent = array_slice($lines, $line-1, 1);
+        $lineContent = array_slice($lines, $line - 1, 1);
         $lineContent = reset($lineContent);
-        $start = strpos($lineContent, $text.'');
+        $start = strpos($lineContent, $text . '');
 
         return [
             'snippet' => $lineContent,
             'line' => $line,
             'magic' => $text,
-            'col' => $start
+            'col' => $start,
         ];
     }
 }

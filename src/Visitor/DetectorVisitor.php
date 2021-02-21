@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace PHPMND\Visitor;
 
+use function in_array;
+use function is_numeric;
+use PHPMND\Console\Option;
+use PHPMND\FileReport;
 use PhpParser\Node;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Expr\UnaryMinus;
@@ -13,8 +17,6 @@ use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use PHPMND\Console\Option;
-use PHPMND\FileReport;
 
 class DetectorVisitor extends NodeVisitorAbstract
 {
@@ -42,8 +44,10 @@ class DetectorVisitor extends NodeVisitorAbstract
 
         /** @var LNumber|DNumber|String_ $scalar */
         $scalar = $node;
+
         if ($this->hasSign($node)) {
             $node = $node->getAttribute('parent');
+
             if ($this->isMinus($node)) {
                 if (!isset($scalar->value)) {
                     return null;
@@ -55,6 +59,7 @@ class DetectorVisitor extends NodeVisitorAbstract
         if ($this->isNumber($scalar) || $this->isString($scalar)) {
             foreach ($this->option->getExtensions() as $extension) {
                 $extension->setOption($this->option);
+
                 if ($extension->extend($node)) {
                     $this->fileReport->addEntry($scalar->getLine(), $scalar->value);
 
@@ -80,12 +85,12 @@ class DetectorVisitor extends NodeVisitorAbstract
             $this->isValidNumeric($node)
         );
 
-        return $isNumber && false === $this->ignoreNumber($node);
+        return $isNumber && $this->ignoreNumber($node) === false;
     }
 
     private function isString(Node $node): bool
     {
-        return $this->option->includeStrings() && $node instanceof String_ && false === $this->ignoreString($node);
+        return $this->option->includeStrings() && $node instanceof String_ && $this->ignoreString($node) === false;
     }
 
     private function ignoreNumber(Node $node): bool
@@ -114,6 +119,6 @@ class DetectorVisitor extends NodeVisitorAbstract
         return $this->option->includeNumericStrings() &&
         isset($node->value) &&
         is_numeric($node->value) &&
-        false === $this->ignoreString($node);
+        $this->ignoreString($node) === false;
     }
 }

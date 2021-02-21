@@ -18,9 +18,6 @@ class FileReport
      */
     private $file;
 
-    /**
-     * @param SplFileInfo $file
-     */
     public function __construct(SplFileInfo $file)
     {
         $this->file = $file;
@@ -32,7 +29,6 @@ class FileReport
     }
 
     /**
-     * @param int $line
      * @param int|float $value
      */
     public function addEntry(int $line, $value): void
@@ -50,6 +46,6 @@ class FileReport
 
     public function hasMagicNumbers(): bool
     {
-        return false === empty($this->entries);
+        return empty($this->entries) === false;
     }
 }

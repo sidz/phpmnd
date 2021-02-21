@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests;
 
-use PHPUnit\Framework\TestCase;
+use function get_class;
+use InvalidArgumentException;
 use PHPMND\Extension\AssignExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\ExtensionResolver;
+use PHPUnit\Framework\TestCase;
 
 class ExtensionResolverTest extends TestCase
 {
-    public function testResolveDefault(): void
+    public function test_resolve_default(): void
     {
         $resolver = $this->createResolver();
         $extensions = $resolver->resolve([]);
@@ -19,7 +21,7 @@ class ExtensionResolverTest extends TestCase
         $this->assertSame($resolver->defaults(), $extensions);
     }
 
-    public function testResolveAddExtension(): void
+    public function test_resolve_add_extension(): void
     {
         $resolver = $this->createResolver();
         $extensions = $resolver->resolve(['assign']);
@@ -27,6 +29,7 @@ class ExtensionResolverTest extends TestCase
         foreach ($extensions as $extension) {
             if (get_class($extension) === AssignExtension::class) {
                 $this->assertTrue(true);
+
                 return;
             }
         }
@@ -34,7 +37,7 @@ class ExtensionResolverTest extends TestCase
         $this->assertTrue(false);
     }
 
-    public function testResolveAll(): void
+    public function test_resolve_all(): void
     {
         $resolver = $this->createResolver();
         $extensions = $resolver->resolve(['all']);
@@ -42,7 +45,7 @@ class ExtensionResolverTest extends TestCase
         $this->assertSame($resolver->all(), $extensions);
     }
 
-    public function testResolveWithMinus(): void
+    public function test_resolve_with_minus(): void
     {
         $resolver = $this->createResolver();
         $extensions = $resolver->resolve(['-return']);
@@ -56,9 +59,9 @@ class ExtensionResolverTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testResolveNotExistingExtension(): void
+    public function test_resolve_not_existing_extension(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $resolver = $this->createResolver();
         $resolver->resolve(['not_existing']);

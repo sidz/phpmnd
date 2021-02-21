@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
-use PhpParser\Node;
 use PHPMND\Console\Option;
+use PhpParser\Node;
 
 abstract class Extension
 {
@@ -18,7 +18,7 @@ abstract class Extension
 
     abstract public function getName(): string;
 
-    public function setOption(Option $option)
+    public function setOption(Option $option): void
     {
         $this->option = $option;
     }
