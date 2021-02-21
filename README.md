@@ -179,8 +179,10 @@ would mark 100 as not magic.
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+Please consider reading our short [Contribution Guide][contribution guide].
 
 ## License
 
 The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
+
+[contribution guide]: .github/CONTRIBUTING.md
