@@ -55,7 +55,7 @@ If the number came from business specs and is used directly - it's a magic numbe
 You can add this tool as a local, per-project, development dependency to your project by using [Composer](https://getcomposer.org/):
 
 ```bash
-$ composer require --dev povils/phpmnd
+$ composer require --dev phpmnd/phpmnd
 ```
 
 Afterwards you can then invoke it using the `vendor/bin/phpmnd` executable.
@@ -64,7 +64,7 @@ Afterwards you can then invoke it using the `vendor/bin/phpmnd` executable.
 To install it globally simply run:
 
 ```bash
-$ composer global require povils/phpmnd
+$ composer global require phpmnd/phpmnd
 ```
 
 Afterwards make sure you have the global Composer binaries directory in your ``PATH``. Example for some Unix systems:
