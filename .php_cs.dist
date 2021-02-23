@@ -9,7 +9,7 @@ $finder = Finder::create()
     ->in(__DIR__)
     ->exclude([
         '.github',
-        'tests/files',
+        'tests/Fixtures',
     ])
     ->ignoreDotFiles(false)
     ->name('*php')
