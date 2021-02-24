@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PHPMND;
 
-use function array_diff;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -24,7 +23,7 @@ class PHPFinder extends Finder
     ) {
         parent::__construct();
         $dirs = array_filter($directories, 'is_dir');
-        $files = array_diff($directories, $dirs);
+        $files = array_filter($directories, 'is_file');
 
         $this
             ->files()

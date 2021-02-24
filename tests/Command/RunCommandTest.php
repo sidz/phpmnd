@@ -57,4 +57,15 @@ class RunCommandTest extends TestCase
         $this->assertSame(RunCommand::FAILURE, $this->commandTester->getStatusCode());
         $this->assertRegExp('/Suggestions:/i', $this->commandTester->getDisplay());
     }
+
+    public function test_it_does_not_fail_command_when_file_on_path_does_not_exist(): void
+    {
+        $this->commandTester->execute([
+            'directories' => ['tests/Fixtures/FILE_DOES_NOT_EXIST.php'],
+            '--extensions' => 'all',
+        ]);
+
+        $this->assertSame(RunCommand::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertRegExp('/No files found to scan/i', $this->commandTester->getDisplay());
+    }
 }
