@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PHPMND\Console;
+namespace PHPMND\Command;
 
 use function array_filter;
 use function array_map;
@@ -16,6 +16,7 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 use function is_string;
+use PHPMND\Console\Option;
 use PHPMND\Detector;
 use PHPMND\ExtensionResolver;
 use PHPMND\FileReportList;
@@ -33,10 +34,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Command extends BaseCommand
+class RunCommand extends BaseCommand
 {
-    const EXIT_CODE_SUCCESS = 0;
-    const EXIT_CODE_FAILURE = 1;
+    public const SUCCESS = 0;
+    public const FAILURE = 1;
 
     /**
      * @var Timer
@@ -46,15 +47,11 @@ class Command extends BaseCommand
     protected function configure(): void
     {
         $this
-            ->setName('phpmnd')
-            ->setDefinition(
-                [
-                    new InputArgument(
-                        'directories',
-                        InputArgument::REQUIRED + InputArgument::IS_ARRAY,
-                        'One or more files and/or directories to analyze'
-                    ),
-                ]
+            ->setName('run')
+            ->addArgument(
+                'directories',
+                InputArgument::REQUIRED | InputArgument::IS_ARRAY,
+                'One or more files and/or directories to analyze'
             )
             ->addOption(
                 'extensions',
@@ -166,7 +163,7 @@ class Command extends BaseCommand
         if ($finder->count() === 0) {
             $output->writeln('No files found to scan');
 
-            return self::EXIT_CODE_SUCCESS;
+            return self::SUCCESS;
         }
 
         $progressBar = null;
@@ -180,7 +177,6 @@ class Command extends BaseCommand
         $detector = new Detector($this->createOption($input), $hintList);
 
         $fileReportList = new FileReportList();
-        $printer = new Printer\Console();
         $whitelist = $this->getFileOption($input->getOption('whitelist'));
 
         foreach ($finder as $file) {
@@ -212,17 +208,18 @@ class Command extends BaseCommand
             $xmlOutput->printData($output, $fileReportList, $hintList);
         }
 
-        if ($output->getVerbosity() !== OutputInterface::VERBOSITY_QUIET) {
+        if (!$output->isQuiet()) {
             $output->writeln('');
+            $printer = new Printer\Console();
             $printer->printData($output, $fileReportList, $hintList);
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }
 
         if ($input->getOption('non-zero-exit-on-violation') && $fileReportList->hasMagicNumbers()) {
-            return self::EXIT_CODE_FAILURE;
+            return self::FAILURE;
         }
 
-        return self::EXIT_CODE_SUCCESS;
+        return self::SUCCESS;
     }
 
     protected function createFinder(InputInterface $input): PHPFinder
@@ -282,7 +279,7 @@ class Command extends BaseCommand
         return $value;
     }
 
-    private function getFileOption($filename)
+    private function getFileOption($filename): array
     {
         $filename = $this->convertFileDescriptorLink($filename);
 
@@ -310,7 +307,7 @@ class Command extends BaseCommand
         }
     }
 
-    private function getResourceUsage()
+    private function getResourceUsage(): string
     {
         // php-timer ^4.0||^5.0
         if (class_exists(ResourceUsageFormatter::class)) {

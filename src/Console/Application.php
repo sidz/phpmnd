@@ -4,46 +4,30 @@ declare(strict_types=1);
 
 namespace PHPMND\Console;
 
-use const PHP_EOL;
+use PHPMND\Command\RunCommand;
 use function sprintf;
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function trim;
 
 class Application extends BaseApplication
 {
-    const VERSION = '2.4.0';
-    const COMMAND_NAME = 'phpmnd';
+    public const VERSION = '2.4.0';
+    private const NAME = 'phpmnd';
 
     public function __construct()
     {
-        parent::__construct('phpmnd', self::VERSION);
-    }
-
-    public function getDefinition(): InputDefinition
-    {
-        $inputDefinition = parent::getDefinition();
-        $inputDefinition->setArguments();
-
-        return $inputDefinition;
+        parent::__construct(self::NAME, self::VERSION);
+        $this->setDefaultCommand('run', true);
     }
 
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->hasParameterOption('--quiet') === false) {
-            $output->write(
-                sprintf(
-                    'phpmnd %s by Povilas Susinskas' . PHP_EOL,
-                    $this->getVersion()
-                )
-            );
-        }
-
-        if ($input->hasParameterOption('--version') || $input->hasParameterOption('-V')) {
-            return Command::EXIT_CODE_SUCCESS;
-        }
+        $output->writeln($this->getLongVersion());
+        $output->writeln('');
 
         if ($input->getFirstArgument() === null) {
             $input = new ArrayInput(['--help']);
@@ -52,16 +36,17 @@ class Application extends BaseApplication
         return parent::doRun($input, $output);
     }
 
-    protected function getCommandName(InputInterface $input): string
+    public function getLongVersion(): string
     {
-        return self::COMMAND_NAME;
+        return trim(sprintf(
+            '<info>%s</info> version <comment>%s</comment> by Povilas Susinskas',
+            $this->getName(),
+            $this->getVersion()
+        ));
     }
 
     protected function getDefaultCommands(): array
     {
-        $defaultCommands = parent::getDefaultCommands();
-        $defaultCommands[] = new Command();
-
-        return $defaultCommands;
+        return [new HelpCommand(), new RunCommand()];
     }
 }
