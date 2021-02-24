@@ -177,7 +177,6 @@ class RunCommand extends BaseCommand
         $detector = new Detector($this->createOption($input), $hintList);
 
         $fileReportList = new FileReportList();
-        $printer = new Printer\Console();
         $whitelist = $this->getFileOption($input->getOption('whitelist'));
 
         foreach ($finder as $file) {
@@ -209,8 +208,9 @@ class RunCommand extends BaseCommand
             $xmlOutput->printData($output, $fileReportList, $hintList);
         }
 
-        if ($output->getVerbosity() !== OutputInterface::VERBOSITY_QUIET) {
+        if (!$output->isQuiet()) {
             $output->writeln('');
+            $printer = new Printer\Console();
             $printer->printData($output, $fileReportList, $hintList);
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }
