@@ -66,5 +66,6 @@ class RunCommandTest extends TestCase
         ]);
 
         $this->assertSame(RunCommand::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertRegExp('/No files found to scan/i', $this->commandTester->getDisplay());
     }
 }
