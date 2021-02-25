@@ -7,8 +7,6 @@ namespace PHPMND\Command;
 use function array_filter;
 use function array_map;
 use function class_exists;
-use function count;
-use Exception;
 use function explode;
 use function file;
 use function file_exists;
@@ -16,10 +14,10 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 use function is_string;
+use PHPMND\Console\Application;
 use PHPMND\Console\Option;
 use PHPMND\Detector;
 use PHPMND\ExtensionResolver;
-use PHPMND\FileReportList;
 use PHPMND\PHPFinder;
 use PHPMND\Printer;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
@@ -33,6 +31,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @method Application getApplication()
+ */
 class RunCommand extends BaseCommand
 {
     public const SUCCESS = 0;
@@ -147,7 +148,9 @@ class RunCommand extends BaseCommand
         $this->startTimer();
         $finder = $this->createFinder($input);
 
-        if ($finder->count() === 0) {
+        $filesCount = $finder->count();
+
+        if ($filesCount === 0) {
             $output->writeln('No files found to scan');
 
             return self::SUCCESS;
@@ -156,28 +159,26 @@ class RunCommand extends BaseCommand
         $progressBar = null;
 
         if ($input->getOption('progress')) {
-            $progressBar = new ProgressBar($output, $finder->count());
+            $progressBar = new ProgressBar($output, $filesCount);
             $progressBar->start();
         }
 
-        $detector = new Detector($this->createOption($input));
+        $detector = new Detector(
+            $this->getApplication()->getContainer()->getFileParser(),
+            $this->createOption($input)
+        );
 
-        $fileReportList = new FileReportList();
         $whitelist = $this->getFileOption($input->getOption('whitelist'));
 
+        $list = [];
+
         foreach ($finder as $file) {
-            if (count($whitelist) > 0 && !in_array($file->getRelativePathname(), $whitelist)) {
+            if ($whitelist !== [] && !in_array($file->getRelativePathname(), $whitelist, true)) {
                 continue;
             }
 
-            try {
-                $fileReport = $detector->detect($file);
-
-                if ($fileReport->hasMagicNumbers()) {
-                    $fileReportList->addFileReport($fileReport);
-                }
-            } catch (Exception $e) {
-                $output->writeln($e->getMessage());
+            foreach ($detector->detect($file) as $detectionResult) {
+                $list[] = $detectionResult;
             }
 
             if ($input->getOption('progress')) {
@@ -191,17 +192,17 @@ class RunCommand extends BaseCommand
 
         if ($input->getOption('xml-output')) {
             $xmlOutput = new Printer\Xml($input->getOption('xml-output'));
-            $xmlOutput->printData($output, $fileReportList);
+            $xmlOutput->printData($output, $list);
         }
 
         if (!$output->isQuiet()) {
             $output->writeln('');
             $printer = new Printer\Console();
-            $printer->printData($output, $fileReportList);
+            $printer->printData($output, $list);
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }
 
-        return $fileReportList->hasMagicNumbers() ? self::FAILURE : self::SUCCESS;
+        return $list === [] ? self::SUCCESS : self::FAILURE;
     }
 
     protected function createFinder(InputInterface $input): PHPFinder

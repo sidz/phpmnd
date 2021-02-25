@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PHPMND\Visitor;
+namespace PHPMND\PhpParser\Visitor;
 
 use function array_pop;
 use function count;

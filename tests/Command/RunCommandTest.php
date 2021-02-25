@@ -6,6 +6,7 @@ namespace PHPMND\Tests\Command;
 
 use PHPMND\Command\RunCommand;
 use PHPMND\Console\Application;
+use PHPMND\Container;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -18,7 +19,7 @@ class RunCommandTest extends TestCase
 
     protected function setUp(): void
     {
-        $application = new Application();
+        $application = new Application(Container::create());
         $command = new RunCommand();
         $application->add($command);
 

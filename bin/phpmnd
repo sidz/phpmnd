@@ -3,6 +3,7 @@
 
 use Composer\XdebugHandler\XdebugHandler;
 use PHPMND\Console\Application;
+use PHPMND\Container;
 
 if (\in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) === false) {
     echo \PHP_EOL . 'PHPMND may only be invoked from a command line, got "' . \PHP_SAPI . '"' . \PHP_EOL;
@@ -63,4 +64,4 @@ ERROR
     ->check()
 ;
 
-(new Application())->run();
+(new Application(Container::create()))->run();

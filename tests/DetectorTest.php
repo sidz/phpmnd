@@ -17,6 +17,8 @@ use PHPMND\Extension\OperationExtension;
 use PHPMND\Extension\PropertyExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\Extension\SwitchCaseExtension;
+use PHPMND\PhpParser\FileParser;
+use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
 
 class DetectorTest extends TestCase
@@ -375,6 +377,9 @@ class DetectorTest extends TestCase
 
     private function createDetector(Option $option): Detector
     {
-        return new Detector($option);
+        return new Detector(
+            new FileParser((new ParserFactory())->create(ParserFactory::PREFER_PHP7)),
+            $option
+        );
     }
 }

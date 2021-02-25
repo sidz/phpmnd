@@ -9,7 +9,7 @@ use function count;
 use DOMDocument;
 use function explode;
 use PHPMND\Console\Application;
-use PHPMND\FileReportList;
+use PHPMND\DetectionResult;
 use function reset;
 use function str_replace;
 use function strlen;
@@ -26,33 +26,37 @@ class Xml implements Printer
         $this->outputPath = $outputPath;
     }
 
-    public function printData(OutputInterface $output, FileReportList $fileReportList): void
+    /**
+     * @param array<int, DetectionResult> $list
+     */
+    public function printData(OutputInterface $output, array $list): void
     {
+        $groupedList = $this->groupDetectionResultPerFile($list);
+
         $output->writeln('Generate XML output...');
         $dom = new DOMDocument();
         $rootNode = $dom->createElement('phpmnd');
         $rootNode->setAttribute('version', Application::VERSION);
-        $rootNode->setAttribute('fileCount', count($fileReportList->getFileReports()) + 12);
+        $rootNode->setAttribute('fileCount', (string) count($groupedList));
 
         $filesNode = $dom->createElement('files');
 
         $total = 0;
 
-        foreach ($fileReportList->getFileReports() as $fileReport) {
-            $entries = $fileReport->getEntries();
+        foreach ($groupedList as $path => $detectionResults) {
+            $count = count($detectionResults);
+            $total += $count;
 
             $fileNode = $dom->createElement('file');
-            $fileNode->setAttribute('path', $fileReport->getFile()->getRelativePathname());
-            $fileNode->setAttribute('errors', count($entries));
+            $fileNode->setAttribute('path', $path);
+            $fileNode->setAttribute('errors', (string) $count);
 
-            $total += count($entries);
-
-            foreach ($entries as $entry) {
-                $snippet = $this->getSnippet($fileReport->getFile()->getContents(), $entry['line'], $entry['value']);
+            foreach ($detectionResults as $detectionResult) {
+                $snippet = $this->getSnippet($detectionResult->getFile()->getContents(), $detectionResult->getLine(), $detectionResult->getValue());
                 $entryNode = $dom->createElement('entry');
-                $entryNode->setAttribute('line', $entry['line']);
-                $entryNode->setAttribute('start', $snippet['col']);
-                $entryNode->setAttribute('end', $snippet['col'] + strlen($entry['value']));
+                $entryNode->setAttribute('line', (string) $detectionResult->getLine());
+                $entryNode->setAttribute('start', (string) $snippet['col']);
+                $entryNode->setAttribute('end', (string) ($snippet['col'] + strlen((string) $detectionResult->getValue())));
 
                 $snippetNode = $dom->createElement('snippet');
                 $snippetNode->appendChild($dom->createCDATASection($snippet['snippet']));
@@ -66,13 +70,29 @@ class Xml implements Printer
         }
 
         $rootNode->appendChild($filesNode);
-        $rootNode->setAttribute('errorCount', $total);
+        $rootNode->setAttribute('errorCount', (string) $total);
 
         $dom->appendChild($rootNode);
 
         $dom->save($this->outputPath);
 
         $output->writeln('XML generated at ' . $this->outputPath);
+    }
+
+    /**
+     * @param array<int, DetectionResult> $list
+     *
+     * @return array<int, DetectionResult[]>
+     */
+    public function groupDetectionResultPerFile(array $list): array
+    {
+        $result = [];
+
+        foreach ($list as $detectionResult) {
+            $result[$detectionResult->getFile()->getRelativePathname()][] = $detectionResult;
+        }
+
+        return $result;
     }
 
     /**
