@@ -95,8 +95,6 @@ The ``--exclude`` option will exclude a directory, which must be relative to the
 
 The ``--extensions`` option lets you extend the code analysis. The provided extensions must be comma separated.
 
-The ``--hint`` option will suggest replacements for magic numbers based on your codebase constants.
-
 The ``--ignore-funcs`` option will exclude a list of comma separated functions from the code analysis, when using the "argument" extension. Defaults to `intval`, `floatval`, `strval`.
 
 The ``--ignore-numbers`` option will exclude a list of comma separated numbers from the code analysis.

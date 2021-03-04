@@ -41,11 +41,6 @@ class Option
     /**
      * @var bool
      */
-    private $giveHint = false;
-
-    /**
-     * @var bool
-     */
     private $includeNumericStrings = false;
 
     /**
@@ -101,16 +96,6 @@ class Option
     public function setIgnoreStrings(array $ignoreStrings): void
     {
         $this->ignoreStrings = array_merge($this->ignoreStrings, $ignoreStrings);
-    }
-
-    public function giveHint(): bool
-    {
-        return $this->giveHint;
-    }
-
-    public function setGiveHint(bool $giveHint): void
-    {
-        $this->giveHint = $giveHint;
     }
 
     public function includeNumericStrings(): ?bool

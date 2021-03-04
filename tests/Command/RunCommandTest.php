@@ -45,19 +45,6 @@ class RunCommandTest extends TestCase
         $this->assertSame(RunCommand::FAILURE, $this->commandTester->getStatusCode());
     }
 
-    public function test_execute_with_hint_option(): void
-    {
-        $this->commandTester->execute([
-            'directories' => ['tests/Fixtures'],
-            '--extensions' => 'assign',
-            '--non-zero-exit-on-violation' => true,
-            '--hint' => true,
-        ]);
-
-        $this->assertSame(RunCommand::FAILURE, $this->commandTester->getStatusCode());
-        $this->assertRegExp('/Suggestions:/i', $this->commandTester->getDisplay());
-    }
-
     public function test_it_does_not_fail_command_when_file_on_path_does_not_exist(): void
     {
         $this->commandTester->execute([

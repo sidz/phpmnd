@@ -7,7 +7,6 @@ namespace PHPMND;
 use const PHP_VERSION;
 use PHPMND\Console\Option;
 use PHPMND\Visitor\DetectorVisitor;
-use PHPMND\Visitor\HintVisitor;
 use PHPMND\Visitor\ParentConnectorVisitor;
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
@@ -22,15 +21,9 @@ class Detector
      */
     private $option;
 
-    /**
-     * @var HintList
-     */
-    private $hintList;
-
-    public function __construct(Option $option, HintList $hintList)
+    public function __construct(Option $option)
     {
         $this->option = $option;
-        $this->hintList = $hintList;
     }
 
     public function detect(SplFileInfo $file): FileReport
@@ -47,10 +40,6 @@ class Detector
 
         $traverser->addVisitor(new ParentConnectorVisitor());
         $traverser->addVisitor(new DetectorVisitor($fileReport, $this->option));
-
-        if ($this->option->giveHint()) {
-            $traverser->addVisitor(new HintVisitor($this->hintList));
-        }
 
         $stmts = $parser->parse($file->getContents());
         $traverser->traverse($stmts);

@@ -10,7 +10,6 @@ use DOMDocument;
 use function explode;
 use PHPMND\Console\Application;
 use PHPMND\FileReportList;
-use PHPMND\HintList;
 use function reset;
 use function str_replace;
 use function strlen;
@@ -27,7 +26,7 @@ class Xml implements Printer
         $this->outputPath = $outputPath;
     }
 
-    public function printData(OutputInterface $output, FileReportList $fileReportList, HintList $hintList): void
+    public function printData(OutputInterface $output, FileReportList $fileReportList): void
     {
         $output->writeln('Generate XML output...');
         $dom = new DOMDocument();
@@ -57,21 +56,8 @@ class Xml implements Printer
 
                 $snippetNode = $dom->createElement('snippet');
                 $snippetNode->appendChild($dom->createCDATASection($snippet['snippet']));
-                $suggestionsNode = $dom->createElement('suggestions');
-
-                if ($hintList->hasHints()) {
-                    $hints = $hintList->getHintsByValue($entry['value']);
-
-                    if (empty($hints) === false) {
-                        foreach ($hints as $hint) {
-                            $suggestionNode = $dom->createElement('suggestion', $hint);
-                            $suggestionsNode->appendChild($suggestionNode);
-                        }
-                    }
-                }
 
                 $entryNode->appendChild($snippetNode);
-                $entryNode->appendChild($suggestionsNode);
 
                 $fileNode->appendChild($entryNode);
             }
