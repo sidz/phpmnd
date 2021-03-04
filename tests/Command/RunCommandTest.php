@@ -39,7 +39,6 @@ class RunCommandTest extends TestCase
     {
         $this->commandTester->execute([
             'directories' => ['tests/Fixtures'],
-            '--non-zero-exit-on-violation' => true,
         ]);
 
         $this->assertSame(RunCommand::FAILURE, $this->commandTester->getStatusCode());

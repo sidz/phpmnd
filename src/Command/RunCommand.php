@@ -103,12 +103,6 @@ class RunCommand extends BaseCommand
                 'Show progress bar'
             )
             ->addOption(
-                'non-zero-exit-on-violation',
-                null,
-                InputOption::VALUE_NONE,
-                'Return a non zero exit code when there are magic numbers'
-            )
-            ->addOption(
                 'strings',
                 null,
                 InputOption::VALUE_NONE,
@@ -207,11 +201,7 @@ class RunCommand extends BaseCommand
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }
 
-        if ($input->getOption('non-zero-exit-on-violation') && $fileReportList->hasMagicNumbers()) {
-            return self::FAILURE;
-        }
-
-        return self::SUCCESS;
+        return $fileReportList->hasMagicNumbers() ? self::FAILURE : self::SUCCESS;
     }
 
     protected function createFinder(InputInterface $input): PHPFinder
