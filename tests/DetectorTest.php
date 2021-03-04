@@ -17,7 +17,6 @@ use PHPMND\Extension\OperationExtension;
 use PHPMND\Extension\PropertyExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\Extension\SwitchCaseExtension;
-use PHPMND\HintList;
 use PHPUnit\Framework\TestCase;
 
 class DetectorTest extends TestCase
@@ -231,20 +230,6 @@ class DetectorTest extends TestCase
         );
     }
 
-    public function test_detect_with_hint(): void
-    {
-        $option = $this->createOption();
-        $option->setExtensions([new AssignExtension()]);
-        $option->setGiveHint(true);
-        $hintList = new HintList();
-        $detector = $this->createDetector($option, $hintList);
-
-        $detector->detect(FileReportTest::getTestFile('test_1'));
-
-        $this->assertTrue($hintList->hasHints());
-        $this->assertSame(['TEST_1::TEST_1'], $hintList->getHintsByValue(3));
-    }
-
     public function test_dont_detect0_and1_with_include_numeric_strings(): void
     {
         $option = $this->createOption();
@@ -388,12 +373,8 @@ class DetectorTest extends TestCase
         return $option;
     }
 
-    private function createDetector(Option $option, ?HintList $hintList = null): Detector
+    private function createDetector(Option $option): Detector
     {
-        if ($hintList === null) {
-            $hintList = new HintList();
-        }
-
-        return new Detector($option, $hintList);
+        return new Detector($option);
     }
 }

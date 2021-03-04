@@ -20,7 +20,6 @@ use PHPMND\Console\Option;
 use PHPMND\Detector;
 use PHPMND\ExtensionResolver;
 use PHPMND\FileReportList;
-use PHPMND\HintList;
 use PHPMND\PHPFinder;
 use PHPMND\Printer;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
@@ -104,12 +103,6 @@ class RunCommand extends BaseCommand
                 'Show progress bar'
             )
             ->addOption(
-                'hint',
-                null,
-                InputOption::VALUE_NONE,
-                'Suggest replacements for magic numbers'
-            )
-            ->addOption(
                 'non-zero-exit-on-violation',
                 null,
                 InputOption::VALUE_NONE,
@@ -173,8 +166,7 @@ class RunCommand extends BaseCommand
             $progressBar->start();
         }
 
-        $hintList = new HintList();
-        $detector = new Detector($this->createOption($input), $hintList);
+        $detector = new Detector($this->createOption($input));
 
         $fileReportList = new FileReportList();
         $whitelist = $this->getFileOption($input->getOption('whitelist'));
@@ -205,13 +197,13 @@ class RunCommand extends BaseCommand
 
         if ($input->getOption('xml-output')) {
             $xmlOutput = new Printer\Xml($input->getOption('xml-output'));
-            $xmlOutput->printData($output, $fileReportList, $hintList);
+            $xmlOutput->printData($output, $fileReportList);
         }
 
         if (!$output->isQuiet()) {
             $output->writeln('');
             $printer = new Printer\Console();
-            $printer->printData($output, $fileReportList, $hintList);
+            $printer->printData($output, $fileReportList);
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }
 
@@ -242,7 +234,6 @@ class RunCommand extends BaseCommand
         $option->setIncludeNumericStrings($input->getOption('include-numeric-string'));
         $option->setIgnoreStrings($this->getCSVOption($input, 'ignore-strings'));
         $option->setAllowArrayMapping($input->getOption('allow-array-mapping'));
-        $option->setGiveHint($input->getOption('hint'));
         $option->setExtensions(
             (new ExtensionResolver())->resolve($this->getCSVOption($input, 'extensions'))
         );

@@ -9,7 +9,6 @@ use JakubOnderka\PhpConsoleColor\ConsoleColor;
 use JakubOnderka\PhpConsoleHighlighter\Highlighter;
 use const PHP_EOL;
 use PHPMND\FileReportList;
-use PHPMND\HintList;
 use function sprintf;
 use function str_repeat;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,9 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Console implements Printer
 {
     const LINE_LENGTH = 80;
-    const TAB = 4;
 
-    public function printData(OutputInterface $output, FileReportList $fileReportList, HintList $hintList): void
+    public function printData(OutputInterface $output, FileReportList $fileReportList): void
     {
         $separator = str_repeat('-', self::LINE_LENGTH);
         $output->writeln(PHP_EOL . $separator . PHP_EOL);
@@ -42,19 +40,6 @@ class Console implements Printer
                 $output->writeln(
                     $highlighter->getCodeSnippet($fileReport->getFile()->getContents(), $entry['line'], 0, 0)
                 );
-
-                if ($hintList->hasHints()) {
-                    $hints = $hintList->getHintsByValue($entry['value']);
-
-                    if (empty($hints) === false) {
-                        $output->writeln('Suggestions:');
-
-                        foreach ($hints as $hint) {
-                            $output->writeln(str_repeat(' ', 2 * self::TAB) . $hint);
-                        }
-                        $output->write(PHP_EOL);
-                    }
-                }
             }
             $output->writeln($separator . PHP_EOL);
         }
