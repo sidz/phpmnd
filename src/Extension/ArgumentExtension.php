@@ -25,14 +25,14 @@ class ArgumentExtension extends Extension
 
     private function ignoreFunc(Node $node): bool
     {
-        /** @var Node|null $funcCallNode| */
+        /** @var Node|null $funcCallNode */
         $parentNode = ParentConnector::findParent($node);
 
         if ($parentNode === null) {
             return false;
         }
 
-        /** @var Node|null $funcCallNode| */
+        /** @var Node|null $funcCallNode */
         $funcCallNode = ParentConnector::findParent($parentNode);
 
         return
