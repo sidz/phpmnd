@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\BinaryOp;
 use PhpParser\Node\Expr\BinaryOp\Coalesce;
@@ -30,10 +31,9 @@ class ConditionExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        return
-            $this->isCondition($node->getAttribute('parent'))
-            &&
-            $this->comparesToConst($node->getAttribute('parent')) === false;
+        $parent = ParentConnector::findParent($node);
+
+        return $parent && $this->isCondition($parent) && !$this->isComparesToConst($parent);
     }
 
     private function isCondition(Node $node): bool
@@ -70,7 +70,7 @@ class ConditionExtension extends Extension
             );
     }
 
-    private function comparesToConst(BinaryOp $node): bool
+    private function isComparesToConst(BinaryOp $node): bool
     {
         return
             $node instanceof BinaryOp

@@ -14,6 +14,8 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 use function is_string;
+use JakubOnderka\PhpConsoleColor\ConsoleColor;
+use JakubOnderka\PhpConsoleHighlighter\Highlighter;
 use PHPMND\Console\Application;
 use PHPMND\Console\Option;
 use PHPMND\Detector;
@@ -197,7 +199,7 @@ class RunCommand extends BaseCommand
 
         if (!$output->isQuiet()) {
             $output->writeln('');
-            $printer = new Printer\Console();
+            $printer = new Printer\Console(new Highlighter(new ConsoleColor()));
             $printer->printData($output, $list);
             $output->writeln('<info>' . $this->getResourceUsage() . '</info>');
         }

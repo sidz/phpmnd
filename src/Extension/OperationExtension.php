@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\BinaryOp\Div;
 use PhpParser\Node\Expr\BinaryOp\Minus;
@@ -23,7 +24,7 @@ class OperationExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        $parentNode = $node->getAttribute('parent');
+        $parentNode = ParentConnector::findParent($node);
 
         return
             $parentNode instanceof Mul

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPMND\Printer;
 
 use function count;
-use JakubOnderka\PhpConsoleColor\ConsoleColor;
 use JakubOnderka\PhpConsoleHighlighter\Highlighter;
 use PHPMND\DetectionResult;
 use function sprintf;
@@ -13,10 +12,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Console implements Printer
 {
+    /**
+     * @var Highlighter
+     */
+    private $highlighter;
+
+    public function __construct(Highlighter $highlighter)
+    {
+        $this->highlighter = $highlighter;
+    }
+
     public function printData(OutputInterface $output, array $list): void
     {
-        $highlighter = new Highlighter(new ConsoleColor());
-
         /** @var DetectionResult $detection */
         foreach ($list as $detection) {
             $output->writeln(sprintf(
@@ -27,7 +34,7 @@ class Console implements Printer
             ));
 
             $output->writeln(
-                $highlighter->getCodeSnippet($detection->getFile()->getContents(), $detection->getLine(), 0, 0)
+                $this->highlighter->getCodeSnippet($detection->getFile()->getContents(), $detection->getLine(), 0, 0)
             );
         }
 

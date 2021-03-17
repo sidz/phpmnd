@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PHPMND\PhpParser\Visitor;
 
 use PHPMND\DetectionResult;
-use PHPMND\FileReport;
 use PHPMND\FileReportGenerator;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
@@ -18,7 +17,7 @@ class DetectionVisitor extends NodeVisitorAbstract
     private $generator;
 
     /**
-     * @var array<iterable<FileReport>
+     * @var array<iterable<DetectionResult>
      */
     private $reports = [];
 

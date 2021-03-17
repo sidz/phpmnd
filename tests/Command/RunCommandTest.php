@@ -29,7 +29,7 @@ class RunCommandTest extends TestCase
     public function test_execute_no_files_found(): void
     {
         $this->commandTester->execute([
-            'directories' => ['tests/Fixtures'],
+            'directories' => ['tests/Fixtures/Files'],
             '--suffixes' => 'bad_suffix',
         ]);
 
@@ -39,7 +39,7 @@ class RunCommandTest extends TestCase
     public function test_execute_with_violation_option(): void
     {
         $this->commandTester->execute([
-            'directories' => ['tests/Fixtures'],
+            'directories' => ['tests/Fixtures/Files'],
         ]);
 
         $this->assertSame(RunCommand::FAILURE, $this->commandTester->getStatusCode());
@@ -48,7 +48,7 @@ class RunCommandTest extends TestCase
     public function test_it_does_not_fail_command_when_file_on_path_does_not_exist(): void
     {
         $this->commandTester->execute([
-            'directories' => ['tests/Fixtures/FILE_DOES_NOT_EXIST.php'],
+            'directories' => ['tests/Fixtures/Files/FILE_DOES_NOT_EXIST.php'],
             '--extensions' => 'all',
         ]);
 

@@ -7,6 +7,7 @@ namespace PHPMND;
 use function in_array;
 use function is_numeric;
 use PHPMND\Console\Option;
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Expr\UnaryMinus;
@@ -44,7 +45,7 @@ class FileReportGenerator
         $scalar = $node;
 
         if ($this->hasSign($node)) {
-            $node = $node->getAttribute('parent');
+            $node = ParentConnector::findParent($node);
 
             if ($this->isMinus($node)) {
                 if (!isset($scalar->value)) {
@@ -100,7 +101,7 @@ class FileReportGenerator
 
     private function hasSign(Node $node): bool
     {
-        $parentNode = $node->getAttribute('parent');
+        $parentNode = ParentConnector::findParent($node);
 
         return $parentNode instanceof UnaryMinus || $parentNode instanceof UnaryPlus;
     }

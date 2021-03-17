@@ -12,7 +12,6 @@ use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function trim;
 
 class Application extends BaseApplication
 {
@@ -46,11 +45,11 @@ class Application extends BaseApplication
 
     public function getLongVersion(): string
     {
-        return trim(sprintf(
+        return sprintf(
             '<info>%s</info> version <comment>%s</comment> by Povilas Susinskas',
             $this->getName(),
             $this->getVersion()
-        ));
+        );
     }
 
     public function getContainer(): Container
