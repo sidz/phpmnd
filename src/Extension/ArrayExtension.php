@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPMND\Extension;
 
 use function is_numeric;
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrayItem;
@@ -19,7 +20,7 @@ class ArrayExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        $parent = $node->getAttribute('parent');
+        $parent = ParentConnector::findParent($node);
 
         return (
             $parent instanceof ArrayItem &&
@@ -31,8 +32,8 @@ class ArrayExtension extends Extension
     {
         $arrayKey = $node->key;
 
-        return $this->option->allowArrayMapping() &&
-        $arrayKey instanceof String_ &&
-        false === ($this->option->includeNumericStrings() && is_numeric($arrayKey->value));
+        return $this->option->allowArrayMapping()
+            && $arrayKey instanceof String_
+            && false === ($this->option->includeNumericStrings() && is_numeric($arrayKey->value));
     }
 }

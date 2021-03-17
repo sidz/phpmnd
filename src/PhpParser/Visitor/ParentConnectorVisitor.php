@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PHPMND\Visitor;
+namespace PHPMND\PhpParser\Visitor;
 
 use function array_pop;
 use function count;
@@ -12,7 +12,7 @@ use PhpParser\NodeVisitorAbstract;
 class ParentConnectorVisitor extends NodeVisitorAbstract
 {
     /**
-     * @var array
+     * @var Node[]
      */
     private $stack;
 
@@ -23,9 +23,10 @@ class ParentConnectorVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
-        if (empty($this->stack) === false) {
-            $node->setAttribute('parent', $this->stack[count($this->stack) - 1]);
-        }
+        $stackCount = count($this->stack);
+
+        ParentConnector::setParent($node, $this->stack[$stackCount - 1] ?? null);
+
         $this->stack[] = $node;
     }
 

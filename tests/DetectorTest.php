@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace PHPMND\Tests;
 
-use function array_merge;
-use function in_array;
+use function array_map;
+use function iterator_to_array;
 use PHPMND\Console\Option;
+use PHPMND\DetectionResult;
 use PHPMND\Detector;
 use PHPMND\Extension\ArgumentExtension;
 use PHPMND\Extension\ArrayExtension;
@@ -17,14 +18,43 @@ use PHPMND\Extension\OperationExtension;
 use PHPMND\Extension\PropertyExtension;
 use PHPMND\Extension\ReturnExtension;
 use PHPMND\Extension\SwitchCaseExtension;
+use PHPMND\PhpParser\FileParser;
+use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Finder\SplFileInfo;
 
 class DetectorTest extends TestCase
 {
+    private const FIXTURES_DIR = __DIR__ . '/Fixtures/Files';
+
+    /**
+     * @var Option
+     */
+    private $option;
+
+    /**
+     * @var Detector
+     */
+    private $detector;
+
+    protected function setUp(): void
+    {
+        $this->option = new Option();
+        $this->option->setExtensions([
+            new ReturnExtension(),
+            new ConditionExtension(),
+            new SwitchCaseExtension(),
+        ]);
+
+        $this->detector = new Detector(
+            new FileParser((new ParserFactory())->create(ParserFactory::PREFER_PHP7)),
+            $this->option
+        );
+    }
+
     public function test_detect_default(): void
     {
-        $detector = $this->createDetector($this->createOption());
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
         $this->assertSame(
             [
@@ -57,225 +87,250 @@ class DetectorTest extends TestCase
                     'value' => -1,
                 ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_assign_extension(): void
     {
-        $option = $this->createOption([new AssignExtension()]);
-        $option->setIncludeNumericStrings(true);
-        $detector = $this->createDetector($option);
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $this->option->setExtensions([new AssignExtension()]);
+        $this->option->setIncludeNumericStrings(true);
 
-        $this->assertContains(
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
+
+        $this->assertSame(
             [
-                'line' => 5,
-                'value' => '4',
+                [
+                    'line' => 5,
+                    'value' => '4',
+                ],
+                [
+                    'line' => 18,
+                    'value' => 3,
+                ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_property_extension(): void
     {
-        $option = $this->createOption([new PropertyExtension()]);
-        $detector = $this->createDetector($option);
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $this->option->setExtensions([new PropertyExtension()]);
 
-        $this->assertContains(
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
+
+        $this->assertSame(
             [
-                'line' => 11,
-                'value' => 6,
+                [
+                    'line' => 11,
+                    'value' => 6,
+                ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_array_extension(): void
     {
-        $option = $this->createOption([new ArrayExtension()]);
-        $detector = $this->createDetector($option);
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $this->option->setExtensions([new ArrayExtension()]);
 
-        $this->assertContains(
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
+
+        $this->assertSame(
             [
-                'line' => 30,
-                'value' => 13,
+                [
+                    'line' => 30,
+                    'value' => 13,
+                ],
+                [
+                    'line' => 32,
+                    'value' => 18,
+                ],
+                [
+                    'line' => 33,
+                    'value' => 123,
+                ],
+                [
+                    'line' => 33,
+                    'value' => 1234,
+                ],
+                [
+                    'line' => 34,
+                    'value' => 1234,
+                ],
+                [
+                    'line' => 64,
+                    'value' => 1234,
+                ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_argument_extension(): void
     {
-        $option = $this->createOption([new ArgumentExtension()]);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArgumentExtension()]);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
-        $this->assertContains(
+        $this->assertSame(
             [
-                'line' => 25,
-                'value' => 4,
+                [
+                    'line' => 3,
+                    'value' => 3,
+                ],
+                [
+                    'line' => 25,
+                    'value' => 4,
+                ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_default_parameter_extension(): void
     {
-        $option = $this->createOption([new DefaultParameterExtension()]);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new DefaultParameterExtension()]);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
-        $this->assertContains(
+        $this->assertSame(
             [
-                'line' => 13,
-                'value' => 4,
+                [
+                    'line' => 13,
+                    'value' => 4,
+                ],
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_operation_extension(): void
     {
-        $option = $this->createOption([new OperationExtension()]);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new OperationExtension()]);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
-        $this->assertContains(
+        $this->assertSame(
             [
-                'line' => 40,
-                'value' => 15,
+                [
+                    'line' => 40,
+                    'value' => 15,
+                ],
+                [
+                    'line' => 43,
+                    'value' => 20,
+                ],
+                [
+                    'line' => 43,
+                    'value' => 21,
+                ],
             ],
-            $fileReport->getEntries()
-        );
-
-        $this->assertNotContains(
-            [
-                'line' => 40,
-                'value' => 21,
-            ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_with_ignore_number(): void
     {
         $ignoreNumbers = [2, 10];
-        $option = $this->createOption();
-        $option->setIgnoreNumbers($ignoreNumbers);
-        $detector = $this->createDetector($option);
+        $this->option->setIgnoreNumbers($ignoreNumbers);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
-        foreach ($fileReport->getEntries() as $entry) {
-            $this->assertFalse(in_array($entry['value'], $ignoreNumbers, true));
+        foreach ($this->getActualResult($result) as $entry) {
+            $this->assertNotContains($entry['value'], $ignoreNumbers);
         }
     }
 
     public function test_detect_with_ignore_funcs(): void
     {
-        $ignoreFuncs = ['round'];
-        $option = $this->createOption([new ArgumentExtension()]);
-        $option->setIgnoreFuncs($ignoreFuncs);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArgumentExtension()]);
+        $this->option->setIgnoreFuncs(['round']);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
         $this->assertNotContains(
             [
                 'line' => 25,
                 'value' => 4,
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_include_strings(): void
     {
-        $option = $this->createOption();
-        $option->setIncludeStrings(true);
-        $detector = $this->createDetector($option);
+        $this->option->setIncludeStrings(true);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
         $this->assertContains(
             [
                 'line' => 46,
                 'value' => 'string',
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_detect_include_strings_and_ignore_string(): void
     {
-        $option = $this->createOption();
-        $option->setIncludeStrings(true);
-        $option->setIgnoreStrings(['string']);
-        $detector = $this->createDetector($option);
+        $this->option->setIncludeStrings(true);
+        $this->option->setIgnoreStrings(['string']);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
         $this->assertNotContains(
             [
                 'line' => 45,
                 'value' => 'string',
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_dont_detect0_and1_with_include_numeric_strings(): void
     {
-        $option = $this->createOption();
-        $option->setExtensions([new AssignExtension()]);
-        $option->setIncludeNumericStrings(true);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new AssignExtension()]);
+        $this->option->setIncludeNumericStrings(true);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_2'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_2.php'));
 
-        $this->assertEmpty($fileReport->getEntries());
+        $this->assertEmpty($this->getActualResult($result));
     }
 
     public function test_detect_reading_number(): void
     {
-        $option = $this->createOption();
-        $option->setExtensions([new ArrayExtension()]);
-        $option->setIncludeNumericStrings(true);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArrayExtension()]);
+        $this->option->setIncludeNumericStrings(true);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
         $this->assertContains(
             [
                 'line' => 64,
                 'value' => 1234,
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
     public function test_allow_array_mapping_with_array_extension(): void
     {
-        $option = $this->createOption();
-        $option->setExtensions([new ArrayExtension()]);
-        $option->setAllowArrayMapping(true);
-        $option->setIncludeNumericStrings(true);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArrayExtension()]);
+        $this->option->setAllowArrayMapping(true);
+        $this->option->setIncludeNumericStrings(true);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
+
+        $result = $this->getActualResult($result);
 
         $this->assertContains(
             [
                 'line' => 32,
                 'value' => 18,
             ],
-            $fileReport->getEntries()
+            $result
         );
 
         $this->assertContains(
@@ -283,7 +338,7 @@ class DetectorTest extends TestCase
                 'line' => 33,
                 'value' => 1234,
             ],
-            $fileReport->getEntries()
+            $result
         );
 
         $this->assertContains(
@@ -291,7 +346,7 @@ class DetectorTest extends TestCase
                 'line' => 34,
                 'value' => 1234,
             ],
-            $fileReport->getEntries()
+            $result
         );
 
         $this->assertNotContains(
@@ -299,20 +354,18 @@ class DetectorTest extends TestCase
                 'line' => 30,
                 'value' => 13,
             ],
-            $fileReport->getEntries()
+            $result
         );
     }
 
     public function test_default_ignore_functions(): void
     {
-        $option = $this->createOption();
-        $option->setExtensions([new ArrayExtension()]);
-        $option->setIncludeNumericStrings(true);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArrayExtension()]);
+        $this->option->setIncludeNumericStrings(true);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_1'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_1.php'));
 
-        $results = $fileReport->getEntries();
+        $results = $this->getActualResult($result);
 
         $this->assertNotContains(
             [
@@ -341,40 +394,34 @@ class DetectorTest extends TestCase
 
     public function test_check_for_magic_array_constants(): void
     {
-        $option = $this->createOption();
-        $option->setExtensions([new ArrayExtension()]);
-        $detector = $this->createDetector($option);
+        $this->option->setExtensions([new ArrayExtension()]);
 
-        $fileReport = $detector->detect(FileReportTest::getTestFile('test_3'));
+        $result = $this->detector->detect($this->createSplFileInfo(self::FIXTURES_DIR . '/test_3.php'));
 
         $this->assertContains(
             [
                 'line' => 4,
                 'value' => 2,
             ],
-            $fileReport->getEntries()
+            $this->getActualResult($result)
         );
     }
 
-    private function createOption(array $extensions = []): Option
+    private function createSplFileInfo(string $filePath): SplFileInfo
     {
-        $option = new Option();
-        $option->setExtensions(
-            array_merge(
-                [
-                    new ReturnExtension(),
-                    new ConditionExtension(),
-                    new SwitchCaseExtension(),
-                ],
-                $extensions
-            )
-        );
-
-        return $option;
+        return new SplFileInfo($filePath, '', '');
     }
 
-    private function createDetector(Option $option): Detector
+    private function getActualResult(iterable $result): array
     {
-        return new Detector($option);
+        return array_map(
+            static function (DetectionResult $detectionResult) {
+                return [
+                    'line' => $detectionResult->getLine(),
+                    'value' => $detectionResult->getValue(),
+                ];
+            },
+            iterator_to_array($result, false)
+        );
     }
 }

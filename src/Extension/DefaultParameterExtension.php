@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPMND\Extension;
 
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Param;
 
@@ -16,6 +17,6 @@ class DefaultParameterExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        return $node->getAttribute('parent') instanceof Param;
+        return ParentConnector::findParent($node) instanceof Param;
     }
 }

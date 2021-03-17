@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PHPMND\Extension;
 
 use function in_array;
+use PHPMND\PhpParser\Visitor\ParentConnector;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
@@ -19,13 +20,20 @@ class ArgumentExtension extends Extension
 
     public function extend(Node $node): bool
     {
-        return $node->getAttribute('parent') instanceof Arg && $this->ignoreFunc($node) === false;
+        return ParentConnector::findParent($node) instanceof Arg && $this->ignoreFunc($node) === false;
     }
 
     private function ignoreFunc(Node $node): bool
     {
-        /** @var FuncCall $funcCallNode */
-        $funcCallNode = $node->getAttribute('parent')->getAttribute('parent');
+        /** @var Node|null $funcCallNode */
+        $parentNode = ParentConnector::findParent($node);
+
+        if ($parentNode === null) {
+            return false;
+        }
+
+        /** @var Node|null $funcCallNode */
+        $funcCallNode = ParentConnector::findParent($parentNode);
 
         return
             $funcCallNode instanceof FuncCall
