@@ -13,11 +13,10 @@ $finder = Finder::create()
     ])
     ->ignoreDotFiles(false)
     ->name('*php')
-    ->name('.php_cs.dist')
     ->name('phpmnd')
 ;
 
-return Config::create()
+return (new Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PHP71Migration' => true,
@@ -61,7 +60,9 @@ return Config::create()
         ],
         'logical_operators' => true,
         'native_constant_invocation' => true,
-        'native_function_invocation' => true,
+        'native_function_invocation' => [
+            'include' => ['@internal'],
+        ],
         'no_alternative_syntax' => true,
         'no_superfluous_phpdoc_tags' => true,
         'no_trailing_whitespace_in_string' => false,
@@ -82,8 +83,10 @@ return Config::create()
         'php_unit_set_up_tear_down_visibility' => true,
         'php_unit_strict' => true,
         'php_unit_ordered_covers' => true,
+        'phpdoc_order_by_value' => [
+            'annotations' => ['covers'],
+        ],
         'php_unit_test_annotation' => [
-            'case' => 'snake',
             'style' => 'prefix',
         ],
         'php_unit_test_case_static_method_calls' => [
@@ -100,11 +103,6 @@ return Config::create()
             'equal' => false,
             'identical' => false,
             'less_and_greater' => false,
-        ],
-        'global_namespace_import' => [
-            'import_classes' => true,
-            'import_constants' => true,
-            'import_functions' => true,
         ],
     ])
     ->setFinder($finder)
